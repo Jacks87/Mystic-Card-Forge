@@ -1,0 +1,158 @@
+<!--
+Disclaimer: The project idea, design, and concept belong to me (Jackelin Britton).
+ChatGPT only assisted in helping me put the code together, and debug.
+Last update: 9/16/2025
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /> <!-- Set character encoding -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mystic Card Forge: Portfolio</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <!-- ===== HEADER SECTION with Simple Navigation ===== -->
+  <header>
+    <h1 class="site-title">Mystic Card Forge: My Portfolio</h1>
+    <nav>
+      <a href="#objectives">Program Objectives</a> | 
+      <a href="#projects">Projects & Artifacts</a> | 
+      <a href="#comments-section">Community</a>
+    </nav>
+  </header>
+  <main>
+    <!-- ===== PROGRAM OBJECTIVES (SCROLL WRAPPER) ===== -->
+    <div class="scroll-wrapper">
+      <img src="scroll.png" alt="Scroll Scripture Background" class="scroll-img" />
+      <section id="objectives" class="scroll-content">
+        <h2>AI Program Objectives</h2>
+        <ol>
+          <li>
+            <strong>Develop, analyze, and integrate artificial intelligence applications and IoT systems</strong>
+          </li>
+          <li>
+            <strong>Design and create natural language processing systems (NLP)</strong>
+          </li>
+          <li>
+            <strong>Design and create machine learning systems using best practices and patterns</strong>
+          </li>
+          <li>
+            <strong>Innovate in deep learning by consuming big data with original algorithms</strong>
+          </li>
+          <li>
+            <strong>Demonstrate software development skills using multiple languages, environments, platforms, and source control</strong>
+          </li>
+          <li>
+            <strong>Describe, develop, analyze, and integrate data structures, databases, and database management systems</strong>
+          </li>
+        </ol>
+        <p>
+          (Evidence and links will be provided as each objective is demonstrated in project modules.)
+        </p>
+      </section>
+    </div>
+
+    <!-- ===== PROJECTS / ARTIFACTS SECTION ===== -->
+    <section id="projects">
+      <h2>Projects, Works & Artifacts</h2>
+      <ul>
+        <li>
+          <a href="#card-creator">Mystic Card Forge (Interactive Card Creator App)</a>
+          <span class="artifact-note">— Demonstrates AI objectives through interactive artifact</span>
+        </li>
+      </ul>
+
+      <!-- ===== CARD CREATOR SECTION ===== -->
+      <section id="card-creator">
+        <h3 class="section-title">Create Your Card</h3>
+        <form id="card-form" autocomplete="off">
+          <input type="text" id="card-title" placeholder="Card Title" required />
+          <!-- Universal card color picker -->
+          <label for="card-bgcolor" style="color:#fff; text-align:left; display:block; margin:10px 0 4px 1vw;">Card Color</label>
+          <input type="color" id="card-bgcolor" value="#fafafa" style="width:65px;height:35px;cursor:pointer;margin-bottom:10px;" />
+          <!-- Multi-mana cost picker -->
+          <div id="mana-cost-picker">
+            <label style="color:#fff; display:block; text-align:left; margin-bottom:8px;">Mana Cost</label>
+            <div class="mana-row">
+              <div class="mana-pick"><img src="white.png" class="mana-symbol-pick" alt="White" /><select id="mana-white" class="mana-value">
+                <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                <option value="6">6</option><option value="7">7</option><option value="8">8</option>
+              </select></div>
+              <div class="mana-pick"><img src="blue.png" class="mana-symbol-pick" alt="Blue" /><select id="mana-blue" class="mana-value">
+                <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                <option value="6">6</option><option value="7">7</option><option value="8">8</option>
+              </select></div>
+              <div class="mana-pick"><img src="black.png" class="mana-symbol-pick" alt="Black" /><select id="mana-black" class="mana-value">
+                <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                <option value="6">6</option><option value="7">7</option><option value="8">8</option>
+              </select></div>
+              <div class="mana-pick"><img src="red.png" class="mana-symbol-pick" alt="Red" /><select id="mana-red" class="mana-value">
+                <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                <option value="6">6</option><option value="7">7</option><option value="8">8</option>
+              </select></div>
+              <div class="mana-pick"><img src="green.png" class="mana-symbol-pick" alt="Green" /><select id="mana-green" class="mana-value">
+                <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                <option value="6">6</option><option value="7">7</option><option value="8">8</option>
+              </select></div>
+              <div class="mana-pick"><img src="colorless.png" class="mana-symbol-pick" alt="Colorless" /><select id="mana-colorless" class="mana-value">
+                <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                <option value="6">6</option><option value="7">7</option><option value="8">8</option>
+              </select></div>
+            </div>
+          </div>
+
+          <input type="file" id="card-image" accept="image/*" />
+          <textarea id="card-ability" placeholder="Enter card abilities" required></textarea>
+          <input type="number" id="card-power" placeholder="Power" />
+          <input type="number" id="card-toughness" placeholder="Toughness" />
+          <input type="text" id="card-signature" placeholder="Signature" />
+          <button type="submit" class="main-btn">Save Card</button>
+          <button type="button" id="generate-ai-card" class="main-btn">AI Generate Card</button>
+          <button type="button" id="download-card" class="main-btn">Download Card</button>
+        </form>
+        <!-- Live Card Preview -->
+        <div id="card-preview" class="card-template">
+          <div class="card-header">
+            <span id="preview-title">Card Name</span>
+            <span id="preview-manarow"></span>
+          </div>
+          <div class="card-art" id="preview-art-container"></div>
+          <div class="card-text" id="preview-rules">Rules Text</div>
+          <div class="card-power-toughness">
+            <span id="preview-power"></span>
+            <span>/</span>
+            <span id="preview-toughness"></span>
+          </div>
+          <div class="card-signature" id="preview-signature"></div>
+        </div>
+      </section>
+    </section>
+    
+    <!-- ===== COMMUNITY CARDS AND COMMENTS ===== -->
+    <section id="saved-cards">
+      <h2 class="section-title">Community Cards</h2>
+      <div id="cards-container"></div>
+    </section>
+    <section id="comments-section">
+      <h2 class="section-title">Community Comments</h2>
+      <div id="comments-container"></div>
+      <form id="comment-form">
+        <textarea id="comment-text" placeholder="Leave a comment..."></textarea>
+        <button type="submit" class="main-btn">Post Comment</button>
+      </form>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2025 Jackelin Britton — Portfolio for [Your Program Name]</p>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

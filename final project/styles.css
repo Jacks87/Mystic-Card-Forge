@@ -1,0 +1,340 @@
+/* 
+Disclaimer: The project idea, design, and concept belong to me (Jackelin Britton).
+ChatGPT only assisted in helping me put the code together, and debug.
+Last update: 9/16/2025
+*/
+
+/* ===== OVERALL BACKGROUND AND FONTS ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: url('images/background.png') no-repeat center center/cover;
+  color: #fff;
+  text-align: center;
+}
+
+/* ===== HEADER SECTION WITH NAVIGATION ===== */
+header {
+  background: rgba(0,0,0,0.65);
+  padding: 36px 0 8px 0;
+  border-bottom: 2px solid #171717;
+  position: relative;
+  z-index: 99;
+}
+.site-title {
+  font-size: 2.6em;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin: 0 0 10px 0;
+}
+nav {
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 99;
+}
+nav a {
+  color: #f1c967;
+  text-decoration: underline;
+  font-weight: bold;
+  margin: 0 8px;
+  font-size: 1.13em;
+  transition: color 0.18s;
+}
+nav a:hover { color: #7dd9e8; }
+
+/* ===== MAIN SECTIONS (Objectives, Projects, Card Forge, etc.) ===== */
+section {
+  background: rgba(0,0,0,0.62);
+  margin: 32px auto 36px auto;
+  padding: 30px 6% 28px 6%;
+  border-radius: 18px;
+  max-width: 700px;
+  box-shadow: 0 2px 20px #010b;
+  text-align: left;
+}
+#card-creator, #saved-cards, #comments-section {
+  text-align: center;
+}
+.section-title, #objectives h2, #projects h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 22px;
+  letter-spacing: 0.5px;
+  color: #f9d994;
+}
+
+/* ===== PORTFOLIO OBJECTIVES ===== */
+#objectives ol {
+  counter-reset: obj;
+  padding-left: 2.1em;
+}
+#objectives li {
+  margin: 18px 0 10px 0;
+  font-size: 1.14em;
+  color: #f2f4f7;
+}
+#objectives li:before {
+  counter-increment: obj;
+  content: counter(obj) ". ";
+  color: #6ecee3;
+  font-weight: bold;
+}
+.objective-note {
+  color: #c6e6ff;
+  margin: 4px 0 0 4px;
+  font-size: 0.97em;
+}
+
+/* ===== PORTFOLIO PROJECTS/LINKS SECTION ===== */
+#projects ul {
+  list-style-type: disc;
+  margin-left: 2.2em;
+  font-size: 1.08em;
+  color: #e9ecfa;
+  padding-left: 0;
+}
+#projects li {
+  margin-bottom: 13px;
+}
+.artifact-note {
+  color: #bbdde8;
+  font-size: 0.97em;
+  margin-left: 8px;
+}
+
+/* ===== CARD FORGE: FORM FIELDS/BUTTONS ===== */
+form input, form textarea, form select {
+  display: block;
+  width: 95%;
+  margin: 12px auto;
+  padding: 11px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1.13em;
+  background: #fff;
+  color: #333;
+}
+form textarea { min-height: 54px; resize: vertical; }
+.main-btn {
+  background: #4cafef;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  width: 95%;
+  margin: 13px auto;
+  padding: 13px 0;
+  font-size: 1.13em;
+  cursor: pointer;
+  transition: background 0.13s;
+}
+.main-btn:hover { background: #2c8cc9; }
+
+/* Mana Cost Picker */
+.mana-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0 16px 0;
+}
+.mana-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 4px;
+}
+.mana-symbol-pick {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  margin-bottom: 4px;
+  border: 2px solid #eee;
+  box-shadow: 0 0 3px #2226;
+}
+.mana-value {
+  font-size: 1em;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* Hide preview until user interacts */
+#card-preview { display: none; }
+
+.card-template, .card {
+  border-radius: 16px;
+  margin: 14px auto 13px auto;
+  box-shadow: 0 2px 14px #0108;
+  color: #222;
+  max-width: 400px;
+}
+.card-template {
+  border: 7px solid #222;
+  position: relative;
+  background: #fafafa;
+  padding: 8px 7px 15px 7px;
+  transition: background 0.3s;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  border-radius: 8px;
+  padding: 6px 9px 5px 9px;
+  margin-bottom: 0px;
+  background: #ededed;
+  font-size: 1em;
+}
+.mana-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid #888;
+  margin-left: 2px;
+  vertical-align: middle;
+}
+.card-art, .card img.card-art-img {
+  width: 100%;
+  max-width: 100%;
+  height: 180px;
+  background: #ececec;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 9px;
+  display: block;
+}
+.card-text {
+  padding: 9px 7px 17px 7px;
+  min-height: 40px;
+  background: #fafafa;
+  text-align: left;
+  border-radius: 6px;
+}
+.card-power-toughness {
+  font-weight: bold;
+  font-size: 1.06em;
+  background: #fff;
+  border-radius: 5px;
+  padding: 5px 17px 5px 9px;
+  margin: 5px 0;
+  display: inline-block;
+}
+.card-signature {
+  color: #555;
+  font-style: italic;
+  margin-top: 7px;
+  font-size: 0.96em;
+}
+.card {
+  background: #fafafa;
+  display: inline-block;
+  width: 350px;
+  padding: 12px 7px;
+  vertical-align: top;
+  box-shadow: 0 2px 12px #0002;
+  border-radius: 13px;
+  position: relative;
+}
+.card img.card-art-img { margin-bottom: 5px; }
+.delete-btn {
+  background: #ff5555;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  margin-top: 6px;
+  border-radius: 6px;
+  width: 90%;
+  padding: 8px 0;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.delete-btn:hover { background: #cc2222; }
+
+/* Community comments */
+.comment strong {
+  color: #f4bcc3;
+  font-size: 1em;
+}
+.comment {
+  margin: 7px 0;
+  font-size: 1.05em;
+  color: #fff;
+}
+
+/* ===== FOOTER STYLING ===== */
+footer {
+  background: #283748;
+  color: #c7c7c7;
+  padding: 18px 0;
+  font-size: 1em;
+  margin-top: 40px;
+  border-top: 3px solid #2f435f;
+  letter-spacing: 0.5px;
+}
+
+/* Responsiveness Improvements */
+@media (max-width: 650px) {
+  section, .modal-content { max-width: 97vw !important; padding-left: 0; padding-right: 0; }
+  .site-title { font-size: 2em; }
+  .section-title { font-size: 1.16em; }
+  .card, .card-template { width: 98vw; max-width:98vw; }
+}
+
+/* ===== SCROLL WRAPPER AND CONTENT OVERLAY ===== */
+.scroll-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 680px;
+  margin-bottom: 48px;
+}
+.scroll-img {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 680px;
+  z-index: 1;
+  pointer-events: none;
+}
+.scroll-content {
+  position: relative;
+  z-index: 2;
+  width: 82%;
+  max-width: 570px;
+  margin: 48px auto 0 auto;
+  padding: 50px 44px 40px 44px;
+  background: transparent
+  color: #47351a;
+  font-family: 'Georgia', serif;
+  text-shadow: 0 1px 1.5px #d7be8a;
+  font-size: 1.16em;
+  min-height: 500px;
+}
+.scroll-content h2 {
+  color: #b7976b;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 2em;
+  margin-bottom: 32px;
+  text-shadow: 0 2px 4px #e8dac2;
+}
+.scroll-content ol {
+  list-style-type: decimal;
+  padding-left: 1.8em;
+  margin-bottom: 36px;
+}
+.scroll-content li {
+  margin-bottom: 20px;
+  font-size: 1.13em;
+  background: rgba(255,240,181,0.18);
+  padding: 8px 15px;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px #e7eed2;
+}
+.scroll-content p {
+  color: #ab985c;
+  font-style: italic;
+  text-align: center;
+}
