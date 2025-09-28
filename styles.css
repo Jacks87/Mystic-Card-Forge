@@ -1,0 +1,501 @@
+/* 
+Disclaimer: The project idea, design, and concept belong to me (Jackelin Britton).
+ChatGPT only assisted in helping me put the code together, and debug.
+Last update: 9/28/2025 - Cleaned duplicates and fixed card layout
+*/
+
+/* ===== OVERALL BACKGROUND AND FONTS ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: url('background.png') no-repeat center center/cover;
+  color: #fff;
+  text-align: center;
+}
+
+/* ===== HEADER SECTION WITH NAVIGATION ===== */
+header {
+  background: rgba(0,0,0,0.65);
+  padding: 36px 0 8px 0;
+  border-bottom: 2px solid #171717;
+  position: relative;
+  z-index: 99;
+}
+
+.site-title {
+  font-size: 2.6em;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin: 0 0 10px 0;
+}
+
+nav {
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 99;
+}
+
+nav a {
+  color: #f1c967;
+  text-decoration: underline;
+  font-weight: bold;
+  margin: 0 8px;
+  font-size: 1.13em;
+  transition: color 0.18s;
+}
+
+nav a:hover { 
+  color: #7dd9e8; 
+}
+
+/* ===== MAIN SECTIONS ===== */
+section {
+  background: rgba(0,0,0,0.62);
+  margin: 32px auto 36px auto;
+  padding: 30px 6% 28px 6%;
+  border-radius: 18px;
+  max-width: 700px;
+  box-shadow: 0 2px 20px #010b;
+  text-align: left;
+}
+
+#card-creator, #saved-cards, #comments-section {
+  text-align: center;
+}
+
+.section-title, #objectives h2, #projects h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 22px;
+  letter-spacing: 0.5px;
+  color: #f9d994;
+}
+
+/* ===== PORTFOLIO OBJECTIVES ===== */
+#objectives ol {
+  counter-reset: obj;
+  padding-left: 2.1em;
+}
+
+#objectives li {
+  margin: 18px 0 10px 0;
+  font-size: 1.14em;
+  color: #f2f4f7;
+}
+
+#objectives li:before {
+  counter-increment: obj;
+  content: counter(obj) ". ";
+  color: #6ecee3;
+  font-weight: bold;
+}
+
+.objective-note {
+  color: #c6e6ff;
+  margin: 4px 0 0 4px;
+  font-size: 0.97em;
+}
+
+/* ===== PORTFOLIO PROJECTS/LINKS SECTION ===== */
+#projects ul {
+  list-style-type: disc;
+  margin-left: 2.2em;
+  font-size: 1.08em;
+  color: #e9ecfa;
+  padding-left: 0;
+}
+
+#projects li {
+  margin-bottom: 13px;
+}
+
+.artifact-note {
+  color: #bbdde8;
+  font-size: 0.97em;
+  margin-left: 8px;
+}
+
+/* ===== CARD FORGE: FORM FIELDS/BUTTONS ===== */
+form input, form textarea, form select {
+  display: block;
+  width: 95%;
+  margin: 12px auto;
+  padding: 11px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1.13em;
+  background: #fff;
+  color: #333;
+}
+
+form textarea { 
+  min-height: 54px; 
+  resize: vertical; 
+}
+
+.main-btn {
+  background: #4cafef;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  width: 95%;
+  margin: 13px auto;
+  padding: 13px 0;
+  font-size: 1.13em;
+  cursor: pointer;
+  transition: background 0.13s;
+}
+
+.main-btn:hover { 
+  background: #2c8cc9; 
+}
+
+/* ===== Mana Cost Picker ===== */
+.mana-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0 16px 0;
+}
+
+.mana-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 4px;
+}
+
+.mana-symbol-pick {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  margin-bottom: 4px;
+  border: 2px solid #eee;
+  box-shadow: 0 0 3px #2226;
+}
+
+.mana-value {
+  font-size: 1em;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* ===== CARD PREVIEW (Hidden initially) ===== */
+#card-preview { 
+  display: none; 
+}
+
+/* ===== CARD TEMPLATE (Preview card in creator) ===== */
+.card-template {
+  width: 300px;
+  height: 420px;
+  border: 7px solid #222;
+  border-radius: 16px;
+  margin: 14px auto;
+  box-shadow: 0 2px 14px #0108;
+  color: #222;
+  position: relative;
+  background: #fafafa;
+  padding: 0;
+  transition: background 0.3s;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ===== GALLERY CARDS (Fixed layout) ===== */
+.card {
+  width: 300px;          /* fixed size for consistency */
+  height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 12px;
+  overflow: hidden;      /* clip anything spilling out */
+}
+
+.card img {
+  width: 100%;
+  height: auto;          /* keep aspect ratio */
+  object-fit: cover;     /* makes the image fit inside */
+}
+
+/* Card header - Used in both preview and gallery */
+.card-header, .preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.1);
+  font-weight: 700;
+  font-size: 1rem;
+  min-height: 40px;
+  flex-shrink: 0;
+}
+
+/* Mana symbols row */
+.card-manacost-row, .preview-manacost-row {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Mana icons */
+.mana-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #333;
+}
+
+/* Card art section */
+.card-art-container {
+  width: 100%;
+  height: 180px;
+  background: #444;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.card-art-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Card text/abilities - Fixed height with scroll */
+.card-text, .preview-rules {
+  font-size: 0.85rem;
+  line-height: 1.2;
+  padding: 5px;
+  overflow-wrap: break-word; /* prevents text overflow */
+}
+
+/* Power/Toughness box */
+.card-power-toughness, .preview-pt-box {
+  position: absolute;
+  bottom: 60px;  /* Positioned above voting controls */
+  right: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border: 2px solid gold;
+  z-index: 5;
+}
+
+/* Card signature */
+.card-signature, .preview-signature {
+  font-size: 0.7rem;
+  color: #555;
+  text-align: right;
+  padding: 4px 12px;
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+}
+
+/* Voting controls - Positioned at bottom */
+.card-voting-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.card-voting-controls span {
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.card-voting-controls button {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  font-weight: bold;
+  border: none;
+  transition: all 0.2s;
+}
+
+.vote-btn {
+  background: #4CAF50;
+  color: white;
+}
+
+.vote-btn:hover {
+  background: #45a049;
+}
+
+.delete-btn {
+  display: inline-block;
+  background-color: crimson;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 6px;
+  position: relative;  /* prevents it from being cut off */
+  z-index: 2;          /* ensures it shows above the card */
+}
+
+.delete-btn:hover {
+  background: #da190b;
+}
+
+/* ===== Community comments ===== */
+.comment strong {
+  color: #f4bcc3;
+  font-size: 1em;
+}
+
+.comment {
+  margin: 7px 0;
+  font-size: 1.05em;
+  color: #fff;
+}
+
+/* ===== FOOTER STYLING ===== */
+footer {
+  background: #283748;
+  color: #c7c7c7;
+  padding: 18px 0;
+  font-size: 1em;
+  margin-top: 40px;
+  border-top: 3px solid #2f435f;
+  letter-spacing: 0.5px;
+}
+
+/* ===== SCROLL WRAPPER AND CONTENT OVERLAY ===== */
+.scroll-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 680px;
+  margin-bottom: 48px;
+}
+
+.scroll-img {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 680px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.scroll-content {
+  color: #2d3748;
+  text-align: center;
+  background: transparent;
+  font-family: 'Georgia', serif;
+  text-shadow: 0 1px 1.5px #d7be8a;
+  max-width: 600px;
+}
+
+.scroll-content h2 {
+  color: #b7976b;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 2em;
+  margin-bottom: 32px;
+  text-shadow: 0 2px 4px #e8dac2;
+}
+
+.scroll-content ol {
+  list-style-type: decimal;
+  padding-left: 1.8em;
+  margin-bottom: 36px;
+}
+
+.scroll-content li {
+  margin-bottom: 20px;
+  font-size: 1.13em;
+  background: rgba(255,240,181,0.18);
+  padding: 8px 15px;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px #e7eed2;
+}
+
+.scroll-content p {
+  color: #ab985c;
+  font-style: italic;
+  text-align: center;
+}
+
+/* ===== TABS STYLING ===== */
+.tabs {
+  display: flex;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  border-bottom: 2px solid #222;
+  margin: 0 auto 20px auto;
+  padding: 12px 0;
+}
+
+.tab-link {
+  color: #f1c967;
+  font-weight: bold;
+  font-size: 1.05em;
+  text-decoration: none;
+  margin: 0 15px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tab-link:hover {
+  background: #2c8cc9;
+  color: #fff;
+}
+
+.tab-link.active {
+  background: #4cafef;
+  color: #fff;
+}
+
+/* Tab panels - Hidden unless active */
+/* Tab panel visibility */
+.tab-panel {
+    display: none; /* Default state: hidden */
+    padding: 0;   /* Optional: Remove default padding for better control */
+}
+
+.tab-panel.active {
+    display: block; /* Overrides hidden state when active */
+}
+
+/* ===== Responsiveness ===== */
+@media (max-width: 650px) {
+  section, .modal-content { 
+    max-width: 97vw !important; 
+    padding-left: 0; 
+    padding-right: 0; 
+  }
+  .site-title { 
+    font-size: 2em; 
+  }
+  .section-title { 
+    font-size: 1.16em; 
+  }
+  .card, .card-template { 
+    width: 280px; 
+    height: 390px;
+  }
+}
