@@ -1,0 +1,455 @@
+<!--
+Disclaimer: The project idea, design, and concept belong to me (Jackelin Britton).
+ChatGPT only assisted in helping me put the code together, and debug.
+Last update: 9/27/2025
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystic Card Forge: Portfolio</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load html2canvas for image download -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap');
+        
+        :root {
+            --card-font: 'Playfair Display', serif;
+            --main-font: 'Inter', sans-serif;
+            --card-border-color: #5d4037;
+        }
+
+        /* Custom body background */
+        body {
+            font-family: var(--main-font);
+            background: url('images/background.png') no-repeat center center/cover;
+            background-attachment: fixed;
+        }
+
+        /* Custom Card Styles - These are project-specific and can't be replicated with Tailwind alone */
+        .card-preview, .card, .card-template {
+            width: 300px;
+            height: 420px;
+            background: #fafafa;
+            border: 8px solid var(--card-border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: #1a1a1a;
+            position: relative;
+            font-family: var(--card-font);
+        }
+        
+        .card-header, .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.1);
+            font-family: var(--card-font);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .card-manacost-row, .preview-manacost-row {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .mana-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid #333;
+        }
+
+        .card-art-container, .card-art {
+            width: 100%;
+            height: 50%;
+            min-height: 180px;
+            background: #444;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .card-art-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .card-text, .preview-rules {
+            padding: 10px 12px;
+            flex-grow: 1;
+            font-size: 0.9rem;
+            line-height: 1.3;
+            font-family: var(--card-font);
+            border-top: 2px solid var(--card-border-color);
+            border-bottom: 2px solid var(--card-border-color);
+            margin: -2px 0;
+            background: rgba(255, 255, 255, 0.8);
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .card-power-toughness, .preview-pt-box {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: var(--card-font);
+            font-weight: 700;
+            font-size: 1.2rem;
+            border: 2px solid gold;
+        }
+
+        .card-signature, .preview-signature {
+            font-size: 0.75rem;
+            color: #555;
+            text-align: right;
+            padding: 2px 12px 6px;
+            font-style: italic;
+        }
+
+        /* Scroll content overlay - Custom positioning that can't be done with Tailwind alone */
+        .scroll-content {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 65%;
+            max-width: 500px;
+            color: #2d3748;
+            text-align: center;
+            padding: 1.5rem 1rem;
+            background: transparent;
+            font-family: 'Georgia', serif;
+            text-shadow: 0 1px 1.5px #d7be8a;
+        }
+
+        .scroll-content h2 {
+            color: #b7976b;
+            font-family: 'Cinzel', serif;
+            font-size: 2em;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 4px #e8dac2;
+        }
+
+        .scroll-content ol {
+            list-style-type: decimal;
+            padding-left: 1.8em;
+            margin-bottom: 2rem;
+        }
+
+        .scroll-content li {
+            margin-bottom: 1.25rem;
+            font-size: 1.1em;
+            background: rgba(255,240,181,0.18);
+            padding: 8px 15px;
+            border-radius: 12px;
+            box-shadow: 0 1px 6px #e7eed2;
+            text-align: left;
+        }
+
+        .scroll-content p {
+            color: #ab985c;
+            font-style: italic;
+        }
+
+        /* Custom mana picker layout */
+        .mana-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .mana-pick {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mana-symbol-pick {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #eee;
+            box-shadow: 0 0 3px rgba(0,0,0,0.3);
+        }
+
+        /* AI prompt special styling */
+        #ai-prompt {
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+            background: #fefce8;
+            border: 2px solid #eab308;
+            color: #713f12;
+        }
+
+        #ai-prompt::placeholder {
+            color: #a16207;
+        }
+
+        /* Tab panel visibility */
+        .tab-panel:not(.active) {
+            display: none;
+        }
+        
+        .tab-link.active {
+            background-color: #374151;
+            color: white;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        /* Gallery grid responsive fixes */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            justify-items: center;
+        }
+
+        /* Mobile responsiveness for cards */
+        @media (max-width: 640px) {
+            .card-preview, .card, .card-template {
+                width: 280px;
+                height: 390px;
+            }
+            
+            .scroll-content {
+                width: 90%;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white">
+    <!-- Header -->
+    <header class="bg-black bg-opacity-65 py-9 px-4 border-b-2 border-gray-900 relative z-50">
+        <h1 class="text-4xl lg:text-5xl font-black tracking-wide text-yellow-400 mb-3 text-center" style="font-family: 'Playfair Display', serif;">
+            Mystic Card Forge: My Portfolio
+        </h1>
+        <nav class="text-center">
+            <a href="#" class="tab-link active text-yellow-300 hover:text-cyan-300 font-bold mx-2 px-3 py-2 text-lg transition-colors underline" data-tab="home">Home</a> |
+            <a href="#" class="tab-link text-yellow-300 hover:text-cyan-300 font-bold mx-2 px-3 py-2 text-lg transition-colors underline" data-tab="card-creator">Forge Card</a> |
+            <a href="#" class="tab-link text-yellow-300 hover:text-cyan-300 font-bold mx-2 px-3 py-2 text-lg transition-colors underline" data-tab="gallery">Gallery</a> |
+            <a href="#" class="tab-link text-yellow-300 hover:text-cyan-300 font-bold mx-2 px-3 py-2 text-lg transition-colors underline" data-tab="comments">Community</a> |
+            <a href="#" class="tab-link text-yellow-300 hover:text-cyan-300 font-bold mx-2 px-3 py-2 text-lg transition-colors underline" data-tab="overview">Overview</a> |
+            <a href="#" class="tab-link text-yellow-300 hover:text-cyan-300 font-bold mx-2 px-3 py-2 text-lg transition-colors underline" data-tab="prior-art">Prior Art</a> |
+            <a href="#" class="tab-link text-yellow-300 hover:text-cyan-300 font-bold mx-2 px-3 py-2 text-lg transition-colors underline" data-tab="timeline">Timeline</a> |
+            <a href="#" class="tab-link text-yellow-300 hover:text-cyan-300 font-bold mx-2 px-3 py-2 text-lg transition-colors underline" data-tab="usage">Usage</a> |
+            <a href="#" class="tab-link text-yellow-300 hover:text-cyan-300 font-bold mx-2 px-3 py-2 text-lg transition-colors underline" data-tab="evaluation">Evaluation</a>
+        </nav>
+    </header>
+
+    <div class="max-w-7xl mx-auto p-4 lg:p-8">
+        <!-- Tab Content -->
+        <div id="tab-content">
+            <!-- Home Tab -->
+            <div id="home" class="tab-panel active">
+                <!-- Program Objectives with Scroll Background -->
+                <div class="relative w-full flex justify-center mb-12">
+                    <div class="relative">
+                        <img src="scroll.png" alt="Scroll Scripture Background" class="w-auto h-[32rem]" />
+                        <section id="objectives" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3/5 text-center">
+                            <h2 class="text-lg font-bold mb-4 text-amber-800">AI Program Objectives</h2>
+                            <ol class="text-xs text-amber-900 space-y-2 text-left">
+                                <li><strong>1. Develop, analyze, and integrate artificial intelligence applications and IoT systems</strong></li>
+                                <li><strong>2. Design and create natural language processing systems (NLP)</strong></li>
+                                <li><strong>3. Design and create machine learning systems using best practices and patterns</strong></li>
+                                <li><strong>4. Innovate in deep learning by consuming big data with original algorithms</strong></li>
+                                <li><strong>5. Demonstrate software development skills using multiple languages, environments, platforms, and source control</strong></li>
+                                <li><strong>6. Describe, develop, analyze, and integrate data structures, databases, and database management systems</strong></li>
+                            </ol>
+                            <p class="text-xs italic text-amber-700 mt-3">(Evidence and links will be provided as each objective is demonstrated in project modules.)</p>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Projects Section -->
+                <section class="bg-black bg-opacity-60 rounded-2xl p-8 mb-8 max-w-4xl mx-auto">
+                    <h2 class="text-2xl font-bold mb-6 text-yellow-300 tracking-wide">Projects, Works & Artifacts</h2>
+                    <ul class="text-gray-200 text-lg">
+                        <li class="mb-4">
+                            <a href="#" class="text-blue-400 hover:text-blue-300 transition-colors tab-link" data-tab="card-creator">Mystic Card Forge (Interactive Card Creator App)</a>
+                            <span class="text-cyan-200 text-base ml-2 italic">— Demonstrates AI objectives through interactive artifact</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <p class="text-center text-gray-300 text-xl mb-8">
+                    Create, share, and vote on custom cards for your fantasy game!
+                </p>
+            </div>
+
+            <!-- Card Creator Tab -->
+            <div id="card-creator" class="tab-panel">
+                <div class="bg-black bg-opacity-60 rounded-2xl p-8 mb-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        <!-- Form -->
+                        <div class="space-y-6">
+                            <h2 class="text-3xl font-semibold text-yellow-300 mb-6">The Forge</h2>
+                            <form id="card-form" autocomplete="off" class="space-y-6">
+
+                                <!-- AI Prompt -->
+                                <div>
+                                    <label for="ai-prompt" class="block mb-2 text-gray-200 font-medium">AI Card Concept</label>
+                                    <textarea id="ai-prompt" placeholder="💡 Describe your dream card concept here (e.g., 'A fire elemental wizard with a beard of lava')." rows="3" class="w-full p-4 rounded-lg font-serif resize-vertical focus:ring-2 focus:ring-yellow-400 focus:outline-none"></textarea>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <button type="button" id="generate-ai-card" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                                        AI Generate Card
+                                    </button>
+                                    <button type="button" id="download-card" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                                        Download PNG
+                                    </button>
+                                </div>
+
+                                <!-- Card Details -->
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="card-title" class="block mb-2 text-gray-200 font-medium">Card Title</label>
+                                        <input type="text" id="card-title" placeholder="Card Name" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                    </div>
+
+                                    <div>
+                                        <label for="card-bgcolor" class="block mb-2 text-gray-200 font-medium">Card Color/Theme</label>
+                                        <input type="color" id="card-bgcolor" value="#fafafa" class="w-full h-12 p-1 rounded-lg bg-gray-700 border border-gray-600 cursor-pointer">
+                                    </div>
+                                </div>
+
+                                <!-- Mana Cost -->
+                                <div class="bg-gray-700 rounded-lg p-6">
+                                    <h3 class="text-xl font-medium text-gray-200 mb-4">Mana Cost</h3>
+                                    <div class="mana-row">
+                                        <div class="mana-pick">
+                                            <img src="white.png" class="mana-symbol-pick" alt="White" />
+                                            <select id="mana-white" class="bg-gray-600 text-white border border-gray-500 rounded px-2 py-1 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                                <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                                            </select>
+                                        </div>
+                                        <div class="mana-pick">
+                                            <img src="blue.png" class="mana-symbol-pick" alt="Blue" />
+                                            <select id="mana-blue" class="bg-gray-600 text-white border border-gray-500 rounded px-2 py-1 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                                <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                                            </select>
+                                        </div>
+                                        <div class="mana-pick">
+                                            <img src="black.png" class="mana-symbol-pick" alt="Black" />
+                                            <select id="mana-black" class="bg-gray-600 text-white border border-gray-500 rounded px-2 py-1 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                                <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                                            </select>
+                                        </div>
+                                        <div class="mana-pick">
+                                            <img src="red.png" class="mana-symbol-pick" alt="Red" />
+                                            <select id="mana-red" class="bg-gray-600 text-white border border-gray-500 rounded px-2 py-1 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                                <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                                            </select>
+                                        </div>
+                                        <div class="mana-pick">
+                                            <img src="green.png" class="mana-symbol-pick" alt="Green" />
+                                            <select id="mana-green" class="bg-gray-600 text-white border border-gray-500 rounded px-2 py-1 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                                <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                                            </select>
+                                        </div>
+                                        <div class="mana-pick">
+                                            <img src="colorless.png" class="mana-symbol-pick" alt="Colorless" />
+                                            <select id="mana-colorless" class="bg-gray-600 text-white border border-gray-500 rounded px-2 py-1 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                                <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card Image -->
+                                <div>
+                                    <label for="card-image" class="block mb-2 text-gray-200 font-medium">Card Art</label>
+                                    <input type="file" id="card-image" accept="image/*" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-700">
+                                </div>
+
+                                <!-- Rules Text -->
+                                <div>
+                                    <label for="card-ability" class="block mb-2 text-gray-200 font-medium">Rules Text / Abilities</label>
+                                    <textarea id="card-ability" rows="4" placeholder="Enter card abilities here..." class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:ring-2 focus:ring-blue-400 focus:outline-none resize-vertical"></textarea>
+                                </div>
+                                
+                                <!-- Power/Toughness and Signature -->
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="card-power" class="block mb-2 text-gray-200 font-medium">Power</label>
+                                        <input type="text" id="card-power" placeholder="P" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label for="card-toughness" class="block mb-2 text-gray-200 font-medium">Toughness</label>
+                                        <input type="text" id="card-toughness" placeholder="T" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="card-signature" class="block mb-2 text-gray-200 font-medium">Signature / Artist Name</label>
+                                    <input type="text" id="card-signature" placeholder="Signature" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                </div>
+
+                                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-lg">
+                                    Save Card to Gallery
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Card Preview -->
+                        <div class="flex justify-center">
+                            <div id="card-preview" class="card-preview">
+                                <div class="preview-header">
+                                    <span id="preview-title">Card Name</span>
+                                    <span id="preview-manarow" class="preview-manacost-row"></span>
+                                </div>
+                                <div id="preview-art-container" class="card-art-container">
+                                    <span class="text-gray-400 text-center text-sm">Upload art or use AI to generate it.</span>
+                                </div>
+                                <div id="preview-rules" class="preview-rules">Rules Text</div>
+                                <div class="preview-pt-box">
+                                    <span id="preview-power"></span> / <span id="preview-toughness"></span>
+                                </div>
+                                <div id="preview-signature" class="preview-signature"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gallery Tab -->
+            <div id="gallery" class="tab-panel">
+                <div class="bg-black bg-opacity-60 rounded-2xl p-8">
+                    <h2 class="text-3xl font-semibold mb-8 text-yellow-300 text-center">Community Gallery</h2>
+                    <div id="cards-container" class="gallery-grid">
+                        <p class="text-gray-400 col-span-full text-center text-lg">Loading saved cards...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments Tab -->
+            <div id="comments" class="tab-panel">
+                <div class="bg-black bg-opacity-60 rounded-2xl p-8">
+                    <h2 class="text-3xl font-semibold mb-8 text-yellow-300 text-center">Community Feedback</h2>
+                    <div id="comments-container" class="space-y-4 mb-8 max-h-96 overflow-y-auto p-6 bg-gray-700 bg-opacity-50 rounded-lg">
+            <!-- Comments will load here -->
+             </div>
+        </div>
+    </div>
+</div> <!-- End of Comments Tab -->
+<!-- Link to your JavaScript file -->
+<script src="app.js"></script>
+</body>
+</html>
