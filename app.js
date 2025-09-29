@@ -386,18 +386,19 @@ function switchTab(tabName) {
 
                 showPreview();
                 
-            } catch (error) {
-                console.error("AI Card Generation Failed:", error);
-            if (error.message.includes('fetch')) {
-                alert("AI generation failed — backend server may be down or unreachable.");
-            } else {
-                alert(`Error generating card. Details: ${error.message}`);
+} catch (error) {
+    console.error("AI Card Generation Failed:", error);
+
+    if (error.message.includes('fetch')) {
+        alert("AI generation failed — backend server may be down or unreachable.");
+    } else {
+        alert(`Error generating card. Details: ${error.message}`);
+    }
+} finally {
+    aiButton.textContent = "AI Generate Card";
+    aiButton.disabled = false;
 }
 
-            } finally {
-                aiButton.textContent = "AI Generate Card";
-                aiButton.disabled = false;
-            }
         });
     }
 
