@@ -385,17 +385,19 @@ function switchTab(tabName) {
 
                 showPreview();
                 
-            } catch (error) {
-                console.error("AI Card Generation Failed:", error);
-                if (error.message.includes('fetch') || error.message.includes('localhost')) {
-                    alert("AI generation placeholder — integrate with an API later.\n(Backend server not running)");
-                } else {
-                    alert(`Error generating card. Details: ${error.message}`);
-                }
-            } finally {
-                aiButton.textContent = "AI Generate Card";
-                aiButton.disabled = false;
-            }
+} catch (error) {
+    console.error("AI Card Generation Failed:", error);
+
+    if (error.message.includes('fetch')) {
+        alert("AI generation failed — backend server may be down or unreachable.");
+    } else {
+        alert(`Error generating card. Details: ${error.message}`);
+    }
+} finally {
+    aiButton.textContent = "AI Generate Card";
+    aiButton.disabled = false;
+}
+
         });
     }
 
