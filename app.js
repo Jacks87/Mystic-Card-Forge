@@ -332,17 +332,18 @@ function switchTab(tabName) {
                 let inputData = {};
                 let endpoint = '';
 
-                if (isFullGeneration) {
-                    endpoint = 'http://localhost:3000/api/generate-full-card';
-                    inputData = { prompt: userPrompt };
-                } else {
-                    endpoint = 'http://localhost:3000/api/generate-card';
-                    inputData = {
-                        currentTitle: document.getElementById("card-title").value,
-                        currentAbility: document.getElementById("card-ability").value,
-                        manaCost: getSelectedManaCost(),
-                    };
-                }
+            if (isFullGeneration) {
+                endpoint = 'https://card-forge-server.onrender.com/api/generate-full-card';
+                inputData = { prompt: userPrompt };
+            } else {
+                endpoint = 'https://card-forge-server.onrender.com/api/generate-card';
+                inputData = {
+        currentTitle: document.getElementById("card-title").value,
+        currentAbility: document.getElementById("card-ability").value,
+        manaCost: getSelectedManaCost(),
+    };
+}
+
 
                 response = await fetch(endpoint, { 
                     method: 'POST',
