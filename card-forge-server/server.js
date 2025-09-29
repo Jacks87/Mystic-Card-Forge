@@ -145,5 +145,5 @@ app.get("/", (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Mystic Card Forge Backend running on http://localhost:${PORT}`);
+    console.log(`Mystic Card Forge Backend running on port ${PORT}`);
 });
