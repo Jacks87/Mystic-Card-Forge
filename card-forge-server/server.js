@@ -138,6 +138,10 @@ app.post('/api/generate-full-card', async (req, res) => {
     }
 });
 
+// Health check route
+app.get("/", (req, res) => {
+  res.send("🚀 Mystic Card Forge Backend is alive!");
+});
 
 // Start the server
 app.listen(PORT, () => {
