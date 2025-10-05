@@ -1,7 +1,7 @@
 /*
 Disclaimer: The project idea, design, and concept belong to me (Jackelin Britton).
 ChatGPT only assisted in helping me put the code together, and debug.
-Last update: 9/28/2025 - Fixed API integration with Render server + forced preview update (no undefined errors)
+Last update: 10/5/2025 - Fixed API integration with Render server + forced preview update (no undefined errors)
 */
 
 // --- MANDATORY FIREBASE SETUP (Included for Canvas environment compliance) ---
@@ -89,8 +89,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function showPreview() {
         if (!cardPreview) return;
-        cardPreview.style.display = "flex";
-        document.getElementById("preview-manarow").innerHTML = getManaSymbols();
+cardPreview.style.display = "flex";
+
+// Trim mana symbols if too many (prevents overflow)
+let manaHTML = getManaSymbols();
+const tempDiv = document.createElement("div");
+tempDiv.innerHTML = manaHTML;
+const icons = tempDiv.querySelectorAll("img");
+
+if (icons.length > 10) {
+    // Keep first 10, then show ellipsis
+    const trimmed = Array.from(icons).slice(0, 10).map(img => img.outerHTML).join("") + `<span class="mana-ellipsis">…</span>`;
+    manaHTML = trimmed;
+}
+
+document.getElementById("preview-manarow").innerHTML = manaHTML;
+
     }
 
     function resetFormAndPreview() {
@@ -190,6 +204,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         savedCards.forEach(card => {
             let manaSymRow = getManaSymbols(card.mana);
+            // Prevent too many mana icons from breaking layout
+const tempDiv = document.createElement("div");
+tempDiv.innerHTML = manaSymRow;
+const icons = tempDiv.querySelectorAll("img");
+
+if (icons.length > 10) {
+    const trimmed = Array.from(icons).slice(0, 10).map(img => img.outerHTML).join("") + `<span class="mana-ellipsis">…</span>`;
+    manaSymRow = trimmed;
+}
+
             const div = document.createElement("div");
             div.className = "card";
             div.setAttribute('data-card-color', card.bgColor || "#fafafa");
